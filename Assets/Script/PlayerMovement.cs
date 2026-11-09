@@ -5,10 +5,13 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Vitesses & Saut")]
-    public float walkSpeed = 2.5f;     
-    public float runSpeed = 5.5f;    
-    public float acceleration = 10f;  
-    public float turnSpeed = 720f;     
+    // Vitesses calées sur la vitesse naturelle des clips Mixamo (averageSpeed x humanScale)
+    // pour éviter que les pieds glissent. Si tu les changes, change aussi les seuils
+    // du Blend Tree "Locomotion" dans JotaroController (1.95 / 5.0).
+    public float walkSpeed = 1.95f;
+    public float runSpeed = 5f;
+    public float acceleration = 10f;
+    public float turnSpeed = 540f;
     public float gravity = -20f;
     public float jumpHeight = 1.5f;
 
