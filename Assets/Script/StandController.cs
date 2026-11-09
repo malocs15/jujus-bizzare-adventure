@@ -23,9 +23,12 @@ public class StandController : MonoBehaviour
     private AudioSource audioSource;
     private Light auraLight;
     private Coroutine transitionCoroutine;
+    private PlayerMovement playerMovement;
 
     void Start()
     {
+        playerMovement = GetComponent<PlayerMovement>();
+
         // 1. Initialiser l'AudioSource
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -98,16 +101,23 @@ public class StandController : MonoBehaviour
         // Ondulation naturelle de lévitation
         float hover = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
 
+        // Le Stand se projette légèrement plus en avant lors de la course
+        float speedBonus = playerMovement != null ? playerMovement.CurrentSpeed * 0.08f : 0f;
+        float currentFrontOffset = frontOffset + speedBonus;
+
         // Position cible : devant le joueur (JJBA style)
         Vector3 targetPos = transform.position + 
-                            transform.forward * frontOffset + 
+                            transform.forward * currentFrontOffset + 
                             Vector3.up * (hoverOffset + hover);
 
         // Suivi fluide de la position même en marchant / courant
         standInstance.transform.position = Vector3.Lerp(standInstance.transform.position, targetPos, followSpeed * Time.deltaTime);
 
-        // Alignement avec l'orientation de Jotaro (regarde dans la même direction que lui)
-        standInstance.transform.rotation = Quaternion.Slerp(standInstance.transform.rotation, transform.rotation, rotationSpeed * Time.deltaTime);
+        // Légère inclinaison vers l'avant (posture de vol offensive naturelle)
+        Quaternion forwardTilt = Quaternion.Euler(6f, 0f, 0f);
+        Quaternion targetRot = transform.rotation * forwardTilt;
+
+        standInstance.transform.rotation = Quaternion.Slerp(standInstance.transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
     }
 
     private IEnumerator SummonRoutine()
