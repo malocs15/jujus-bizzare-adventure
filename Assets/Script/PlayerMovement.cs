@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
@@ -23,29 +24,30 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private float verticalVelocity;
     private Vector3 horizontalVelocity;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction sprintAction;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
 
-        if (GetComponent<StandController>() == null)
-            gameObject.AddComponent<StandController>();
+        // Actions "Project-wide" (Assets/InputSystem_Actions.inputactions).
+        // Les touches clavier sont positionnelles : WASD en QWERTY = ZQSD en AZERTY, sans code spécifique.
+        moveAction = InputSystem.actions.FindAction("Player/Move", true);
+        jumpAction = InputSystem.actions.FindAction("Player/Jump", true);
+        sprintAction = InputSystem.actions.FindAction("Player/Sprint", true);
+        moveAction.Enable();
+        jumpAction.Enable();
+        sprintAction.Enable();
     }
 
     void Update()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
-        // Support direct AZERTY (Z/Q/S/D) en complément du QWERTY (W/A/S/D) et des flèches
-        if (Input.GetKey(KeyCode.Z) || Input.GetKey(KeyCode.UpArrow)) v = 1f;
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) v = -1f;
-        if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.LeftArrow)) h = -1f;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) h = 1f;
-
-        Vector3 input = Vector3.ClampMagnitude(new Vector3(h, 0f, v), 1f);
-        bool running = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        Vector2 move = moveAction.ReadValue<Vector2>();
+        Vector3 input = Vector3.ClampMagnitude(new Vector3(move.x, 0f, move.y), 1f);
+        bool running = sprintAction.IsPressed();
 
         Vector3 forward = Vector3.forward;
         Vector3 right = Vector3.right;
@@ -94,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool(jumpParameter, false);
             }
 
-            if (Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space))
+            if (jumpAction.WasPressedThisFrame())
             {
                 verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
                 if (animator != null)

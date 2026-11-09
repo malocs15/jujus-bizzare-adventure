@@ -1,12 +1,15 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class StandController : MonoBehaviour
 {
-    [Header("Activation & Touche")]
-    public KeyCode toggleKey = KeyCode.E;
-    public bool isStandActive = false; // Désactivé par défaut, s'active avec E
-    public AudioClip zaWarudoSound;
+    [Header("Références (à assigner dans l'inspecteur)")]
+    [SerializeField] private GameObject standPrefab;   // Assets/Prefabs/StarPlatinum.prefab
+    [SerializeField] private AudioClip zaWarudoSound;  // Assets/Audio/star-platinum-za-warudo.mp3
+
+    [Header("Activation")]
+    public bool isStandActive = false; // Désactivé par défaut, s'active avec l'action "Stand" (E)
 
     [Header("Positionnement devant le joueur (JJBA Anime style)")]
     public float frontOffset = 1.35f;      // Distance devant Jotaro
@@ -16,74 +19,77 @@ public class StandController : MonoBehaviour
     public float hoverAmplitude = 0.08f;   // Amplitude de l'ondulation de vol
     public float hoverFrequency = 2.4f;    // Fréquence de flottement
 
-    [Header("Aura du Stand")]
-    public Color standAuraColor = new Color(0.75f, 0.25f, 1f, 1f); // Violet signature Star Platinum
-
     private GameObject standInstance;
     private AudioSource audioSource;
     private Light auraLight;
     private Coroutine transitionCoroutine;
     private PlayerMovement playerMovement;
+    private InputAction standAction;
 
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
 
-        // 1. Initialiser l'AudioSource
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 0f;
-
-        // Charger le son Za Warudo
-        if (zaWarudoSound == null)
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
         {
-            zaWarudoSound = Resources.Load<AudioClip>("star-platinum-za-warudo");
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f;
         }
-#if UNITY_EDITOR
-        if (zaWarudoSound == null)
-        {
-            zaWarudoSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Resources/star-platinum-za-warudo.mp3");
-        }
-#endif
 
-        // 2. Initialiser ou lier le modèle 3D de Star Platinum
-        SetupStandModel();
+        standAction = InputSystem.actions != null ? InputSystem.actions.FindAction("Player/Stand") : null;
+        if (standAction == null)
+            Debug.LogWarning("StandController : action 'Player/Stand' introuvable dans les Input Actions du projet.", this);
+        else
+            standAction.Enable();
 
-        // 3. Masquer au démarrage (inactif jusqu'à l'appui sur E)
-        if (!isStandActive && standInstance != null)
+        if (standPrefab == null)
         {
-            standInstance.SetActive(false);
+            Debug.LogError("StandController : aucun Stand Prefab assigné dans l'inspecteur.", this);
+            enabled = false;
+            return;
         }
+
+        // Le Stand n'est pas enfant du joueur : il le suit avec du retard dans LateUpdate
+        standInstance = Instantiate(standPrefab);
+        standInstance.name = standPrefab.name;
+        auraLight = standInstance.GetComponentInChildren<Light>();
+
+        if (isStandActive)
+            standInstance.transform.SetPositionAndRotation(GetTargetPosition(), GetTargetRotation());
+        standInstance.SetActive(isStandActive);
+    }
+
+    void OnDestroy()
+    {
+        if (standInstance != null) Destroy(standInstance);
     }
 
     void Update()
     {
-        // Invocation / Retrait du Stand avec la touche E
-        if (Input.GetKeyDown(toggleKey))
-        {
+        if (standAction != null && standAction.WasPressedThisFrame())
             ToggleStand();
-        }
     }
 
     void LateUpdate()
     {
         // Quand Star Platinum est actif, il se positionne et flotte devant Jotaro
         if (isStandActive && standInstance != null && standInstance.activeSelf)
-        {
             UpdateStandPosition();
-        }
     }
 
     public void ToggleStand()
     {
+        if (standInstance == null) return;
+
         isStandActive = !isStandActive;
 
         if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
 
         if (isStandActive)
         {
-            // Son d'invocation mythique
-            if (zaWarudoSound != null && audioSource != null)
+            if (zaWarudoSound != null)
             {
                 audioSource.pitch = 1f;
                 audioSource.PlayOneShot(zaWarudoSound, 1f);
@@ -96,28 +102,30 @@ public class StandController : MonoBehaviour
         }
     }
 
-    private void UpdateStandPosition()
+    private Vector3 GetTargetPosition()
     {
         // Ondulation naturelle de lévitation
         float hover = Mathf.Sin(Time.time * hoverFrequency) * hoverAmplitude;
 
         // Le Stand se projette légèrement plus en avant lors de la course
         float speedBonus = playerMovement != null ? playerMovement.CurrentSpeed * 0.08f : 0f;
-        float currentFrontOffset = frontOffset + speedBonus;
 
-        // Position cible : devant le joueur (JJBA style)
-        Vector3 targetPos = transform.position + 
-                            transform.forward * currentFrontOffset + 
-                            Vector3.up * (hoverOffset + hover);
+        return transform.position +
+               transform.forward * (frontOffset + speedBonus) +
+               Vector3.up * (hoverOffset + hover);
+    }
 
-        // Suivi fluide de la position même en marchant / courant
-        standInstance.transform.position = Vector3.Lerp(standInstance.transform.position, targetPos, followSpeed * Time.deltaTime);
-
+    private Quaternion GetTargetRotation()
+    {
         // Légère inclinaison vers l'avant (posture de vol offensive naturelle)
-        Quaternion forwardTilt = Quaternion.Euler(6f, 0f, 0f);
-        Quaternion targetRot = transform.rotation * forwardTilt;
+        return transform.rotation * Quaternion.Euler(6f, 0f, 0f);
+    }
 
-        standInstance.transform.rotation = Quaternion.Slerp(standInstance.transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+    private void UpdateStandPosition()
+    {
+        Transform t = standInstance.transform;
+        t.position = Vector3.Lerp(t.position, GetTargetPosition(), followSpeed * Time.deltaTime);
+        t.rotation = Quaternion.Slerp(t.rotation, GetTargetRotation(), rotationSpeed * Time.deltaTime);
     }
 
     private IEnumerator SummonRoutine()
@@ -126,8 +134,7 @@ public class StandController : MonoBehaviour
         standInstance.transform.localScale = Vector3.zero;
 
         // Émerge depuis Jotaro vers l'avant
-        Vector3 startPos = transform.position + Vector3.up * hoverOffset;
-        standInstance.transform.position = startPos;
+        standInstance.transform.position = transform.position + Vector3.up * hoverOffset;
 
         if (auraLight != null) auraLight.intensity = 8f;
 
@@ -137,13 +144,10 @@ public class StandController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            float scale = Mathf.SmoothStep(0f, 1f, t);
-            standInstance.transform.localScale = Vector3.one * scale;
+            standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, t);
 
             if (auraLight != null)
-            {
                 auraLight.intensity = Mathf.Lerp(8f, 2.5f, t);
-            }
             yield return null;
         }
 
@@ -159,84 +163,11 @@ public class StandController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            float scale = Mathf.SmoothStep(1f, 0f, t);
-            standInstance.transform.localScale = Vector3.one * scale;
+            standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(1f, 0f, t);
             yield return null;
         }
 
         standInstance.transform.localScale = Vector3.zero;
         standInstance.SetActive(false);
-    }
-
-    private void SetupStandModel()
-    {
-        // 1. Vérifier si un objet "Star Platinum" existe déjà dans la scène
-        GameObject existing = GameObject.Find("Star Platinum");
-        if (existing != null)
-        {
-            standInstance = existing;
-        }
-        else
-        {
-            standInstance = new GameObject("Star Platinum");
-
-            // Instancier le modèle 3D
-            GameObject modelPrefab = null;
-#if UNITY_EDITOR
-            modelPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Models/StarPlatinum.obj");
-#endif
-            if (modelPrefab == null)
-            {
-                modelPrefab = Resources.Load<GameObject>("StarPlatinum");
-            }
-
-            if (modelPrefab != null)
-            {
-                Instantiate(modelPrefab, standInstance.transform);
-            }
-        }
-
-        // 2. Charger et appliquer le matériau Star Platinum avec texture
-        Material spMat = null;
-#if UNITY_EDITOR
-        spMat = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/StarPlatinum.mat");
-#endif
-        if (spMat == null)
-        {
-            spMat = Resources.Load<Material>("StarPlatinum");
-        }
-
-        if (spMat == null)
-        {
-            spMat = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
-            Texture2D tex = null;
-#if UNITY_EDITOR
-            tex = UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Textures/StarPlatinum.png");
-#endif
-            if (tex != null) spMat.mainTexture = tex;
-            if (spMat.HasProperty("_Cull")) spMat.SetFloat("_Cull", 1f); // Render Face: Back pour faces non inversées
-        }
-
-        // Forcer l'application du matériau texturé sur tous les sous-meshes
-        foreach (var rend in standInstance.GetComponentsInChildren<Renderer>())
-        {
-            rend.material = spMat;
-        }
-
-        // Supprimer les colliders pour ne pas bloquer les déplacements de Jotaro
-        foreach (var col in standInstance.GetComponentsInChildren<Collider>())
-        {
-            Destroy(col);
-        }
-
-        // 3. Aura violette
-        GameObject auraObj = new GameObject("StandAura");
-        auraObj.transform.SetParent(standInstance.transform, false);
-        auraObj.transform.localPosition = new Vector3(0f, 1.4f, 0f);
-        auraLight = auraObj.AddComponent<Light>();
-        auraLight.type = LightType.Point;
-        auraLight.color = standAuraColor;
-        auraLight.range = 3.5f;
-        auraLight.intensity = 2.5f;
     }
 }

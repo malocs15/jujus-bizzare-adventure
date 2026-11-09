@@ -337,7 +337,7 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   m_Enabled: 1
-  serializedVersion: 13
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
@@ -389,7 +389,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShapeRadius: 0
+  m_ShadowRadius: 0
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -677,7 +677,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 9624c9217e90afb41a5662629e858ca2, type: 2}
     - target: {fileID: 5866666021909216657, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are already bound by a Humanoid avatar. These transforms can only be changed by Humanoid clips.\n\tTransform 'mixamorig:LeftHandThumb2'\n\tTransform 'mixamorig:LeftHandIndex1'\n\tTransform 'mixamorig:LeftHandPinky2'\n\tTransform 'mixamorig:RightHandRing2'\n\tTransform 'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftHandThumb3'\n\tTransform 'mixamorig:RightArm'\n\tTransform 'mixamorig:RightHandRing1'\n\tTransform 'mixamorig:RightHandIndex3'\n\tTransform 'mixamorig:LeftHandMiddle1'\n\tand more ...\n\tFrom animation clip 'Idle'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       propertyPath: m_ApplyRootMotion
@@ -693,6 +693,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1412259142}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1412259145}
   m_SourcePrefab: {fileID: 100100000, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
 --- !u!1 &1412259139 stripped
 GameObject:
@@ -751,73 +754,27 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.95, z: 0}
---- !u!1001 &1850123450
-PrefabInstance:
+--- !u!114 &1412259145
+MonoBehaviour:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-      propertyPath: m_Name
-      value: Star Platinum
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
---- !u!1 &1850123451 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-  m_PrefabInstance: {fileID: 1850123450}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1850123452 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f31025a163a92ff598e3234c4c05c99a, type: 3}
-  m_PrefabInstance: {fileID: 1850123450}
-  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412259139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89f37210b2256d443b3fcf058d4c77aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StandController
+  standPrefab: {fileID: 713401943830779669, guid: 128603771b48afd2c9f92bd7e06ffc94, type: 3}
+  zaWarudoSound: {fileID: 8300000, guid: a8f289c0b1156d443b3fcf058d4c55aa, type: 3}
+  isStandActive: 0
+  frontOffset: 1.35
+  hoverOffset: 0.25
+  followSpeed: 14
+  rotationSpeed: 16
+  hoverAmplitude: 0.08
+  hoverFrequency: 2.4
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -827,4 +784,3 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 590805774}
   - {fileID: 165719057}
-  - {fileID: 1850123452}

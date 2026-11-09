@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
@@ -16,9 +17,15 @@ public class ThirdPersonCamera : MonoBehaviour
     private float yaw;
     private float pitch = 20f;
     private Vector3 smoothedTarget;
+    private InputAction lookAction;
+
+    private const float LegacyMouseScale = 0.1f;
 
     void Start()
     {
+        lookAction = InputSystem.actions.FindAction("Player/Look", true);
+        lookAction.Enable();
+
         if (target == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -37,12 +44,13 @@ public class ThirdPersonCamera : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        if (Input.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked)
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame
+            && Cursor.lockState != CursorLockMode.Locked)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -55,11 +63,16 @@ public class ThirdPersonCamera : MonoBehaviour
 
         if (Cursor.lockState == CursorLockMode.Locked)
         {
-            yaw += Input.GetAxis("Mouse X") * mouseSensitivity;
-            pitch -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+            // Delta souris en pixels ; x0.1 pour garder la même sensibilité que l'ancien axe "Mouse X/Y"
+            Vector2 look = lookAction.ReadValue<Vector2>() * LegacyMouseScale;
+            yaw += look.x * mouseSensitivity;
+            pitch -= look.y * mouseSensitivity;
             pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
-            distance -= Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
+            // Molette : la valeur brute varie selon l'OS, on ne garde que le sens (1 cran = 0.1 comme avant)
+            float scroll = Mouse.current != null ? Mouse.current.scroll.ReadValue().y : 0f;
+            if (scroll != 0f)
+                distance -= Mathf.Sign(scroll) * LegacyMouseScale * zoomSpeed;
             distance = Mathf.Clamp(distance, minDistance, maxDistance);
         }
 
