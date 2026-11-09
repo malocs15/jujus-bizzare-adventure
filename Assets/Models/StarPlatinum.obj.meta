@@ -10,7 +10,7 @@ ModelImporter:
       name: Mesh_0002.rip
     second: {fileID: 2100000, guid: f8a12345b1156d443b3fcf058d4c9902, type: 2}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1

@@ -28,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+
+        if (GetComponent<StandController>() == null)
+            gameObject.AddComponent<StandController>();
     }
 
     void Update()
