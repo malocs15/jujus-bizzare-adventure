@@ -19,7 +19,12 @@ public class SceneFlow : MonoBehaviour
 
     public void Load(string sceneName)
     {
-        if (IsLoading) return;              
+        if (IsLoading) return;
+        if (!Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Debug.LogError("Scene '" + sceneName + "' is not in the build Scene List.");
+            return;
+        }
         StartCoroutine(LoadRoutine(sceneName));
     }
 
