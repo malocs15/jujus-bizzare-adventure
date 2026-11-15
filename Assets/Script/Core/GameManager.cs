@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [Header("Player state (visible for debugging)")]
     [SerializeField] int playerLevel = 1;
     [SerializeField] string lastCheckpointId = "";
+    SceneFlow sceneFlow;
 
     public int PlayerLevel => playerLevel;
     public string LastCheckpointId => lastCheckpointId;
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
         var go = new GameObject("GameManager");
         Instance = go.AddComponent<GameManager>();
         DontDestroyOnLoad(go);
+        Instance.sceneFlow = go.AddComponent<SceneFlow>();
         SceneManager.sceneLoaded += Instance.OnFirstSceneLoaded;
     }
 
@@ -63,6 +65,12 @@ public class GameManager : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        sceneFlow.Load(sceneName);
+    }
+
+    [ContextMenu("Reload current scene")]
+    void ReloadCurrentScene()
+    {
+        LoadScene(SceneManager.GetActiveScene().name);
     }
 }
