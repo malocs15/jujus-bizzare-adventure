@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandController
   standPrefab: {fileID: 713401943830779669, guid: 128603771b48afd2c9f92bd7e06ffc94, type: 3}
-  zaWarudoSound: {fileID: 0}
+  zaWarudoSound: {fileID: 8300000, guid: a8f289c0b1156d443b3fcf058d4c55aa, type: 3}
   startSummoned: 0
   frontOffset: 1.35
   hoverOffset: 0.25
