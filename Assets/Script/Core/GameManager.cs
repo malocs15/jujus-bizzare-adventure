@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
         Instance = go.AddComponent<GameManager>();
         DontDestroyOnLoad(go);
         Instance.sceneFlow = go.AddComponent<SceneFlow>();
+        go.AddComponent<AudioManager>();
         SceneManager.sceneLoaded += Instance.OnFirstSceneLoaded;
     }
 
