@@ -114,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
         else if (jumpAction.WasPressedThisFrame())
         {
             // Le Stand sorti porte le joueur : saut beaucoup plus haut
-            // TODO S1-J2 : ne l'autoriser qu'une fois la compétence débloquée (niveau 2, section 4.1)
+            // TODO S1-J2 : ne l'autoriser qu'une fois la compétence débloquée (niveau 4, après PetShop)
             float height = stand != null && stand.IsSummoned ? assistedJumpHeight : jumpHeight;
             verticalVelocity = Mathf.Sqrt(height * -2f * gravity);
             if (animator != null) animator.SetBool(jumpParameter, true);
