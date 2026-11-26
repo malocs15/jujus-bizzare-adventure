@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6787961696860374441}
   - component: {fileID: 439203676411907642}
   - component: {fileID: 8041932110557053362}
+  - component: {fileID: 96447906683803728}
   m_Layer: 0
   m_Name: TrainingDummy
   m_TagString: Untagged
@@ -64,6 +65,19 @@ MonoBehaviour:
   flashDuration: 0.08
   fallDuration: 0.5
   destroyDelay: 2
+--- !u!114 &96447906683803728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530433840645978657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f003da737f52e5b943d3b9b5169fda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LockOnTarget
+  aimOffset: {x: 0, y: 1.2, z: 0}
 --- !u!1 &4735657485403724663
 GameObject:
   m_ObjectHideFlags: 0
