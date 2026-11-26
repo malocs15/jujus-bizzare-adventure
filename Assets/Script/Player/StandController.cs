@@ -9,7 +9,7 @@ public class StandController : MonoBehaviour
 {
     [Header("Références (à assigner dans l'inspecteur)")]
     [SerializeField] private GameObject standPrefab;   // Assets/Prefabs/StarPlatinum.prefab
-    [SerializeField] private AudioClip zaWarudoSound;  // Assets/Audio/star-platinum-za-warudo.mp3
+    [SerializeField] private AudioClip zaWarudoSound;  // son d'invocation, vide en attendant un son libre de droits (S3-M2)
 
     [Header("Activation")]
     [FormerlySerializedAs("isStandActive")]
