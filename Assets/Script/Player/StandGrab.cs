@@ -125,6 +125,7 @@ public class StandGrab : MonoBehaviour
         if (flat.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(flat);
 
         held.OnThrown(forward * throwSpeed + Vector3.up * throwLift);
+        stand.PlayAnimation("Throw");
         held = null;
         recoveryTimer = actionRecovery;
     }

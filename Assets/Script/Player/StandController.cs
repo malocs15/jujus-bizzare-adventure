@@ -27,7 +27,7 @@ public class StandController : MonoBehaviour
     public float summonDuration = 0.22f;
     public float dismissDuration = 0.18f;
 
-    [Header("Attaque (en attendant les animations)")]
+    [Header("Attaque (s'ajoute aux clips de StandAnimator)")]
     public float attackLunge = 0.4f;      // le Stand avance pendant le rush
     public float jabAmplitude = 0.25f;    // va-et-vient des coups
     public float jabFrequency = 12f;
@@ -42,6 +42,7 @@ public class StandController : MonoBehaviour
 
     private StateMachine<StandState> fsm;
     private GameObject standInstance;
+    private Animator standAnimator;     // Animator du modèle du Stand (StandAnimator.controller)
     private AudioSource audioSource;
     private Light auraLight;
     private PlayerMovement playerMovement;
@@ -88,6 +89,7 @@ public class StandController : MonoBehaviour
         standInstance = Instantiate(standPrefab);
         standInstance.name = standPrefab.name;
         auraLight = standInstance.GetComponentInChildren<Light>();
+        standAnimator = standInstance.GetComponentInChildren<Animator>();
 
         if (startSummoned)
         {
@@ -154,6 +156,17 @@ public class StandController : MonoBehaviour
             ChangeState(StandState.Following);
     }
 
+    // Animations du Stand, pilotées par ses attaques (StandCombat, StandGrab)
+    public void SetAnimationBool(string parameter, bool value)
+    {
+        if (standAnimator != null && standAnimator.isActiveAndEnabled) standAnimator.SetBool(parameter, value);
+    }
+
+    public void PlayAnimation(string trigger)
+    {
+        if (standAnimator != null && standAnimator.isActiveAndEnabled) standAnimator.SetTrigger(trigger);
+    }
+
     // Pendant la charge du coup chargé, l'aura s'intensifie (t de 0 à 1)
     public void SetChargeGlow(float t)
     {
@@ -184,6 +197,7 @@ public class StandController : MonoBehaviour
     private void EnterSummoning()
     {
         standInstance.SetActive(true);
+        if (playerMovement != null) playerMovement.PlaySummonGesture(); // le joueur pointe devant lui
 
         // Émerge depuis le joueur vers l'avant (sauf si on interrompt un renvoi : il repart d'où il est)
         if (standInstance.transform.localScale.x <= 0.01f)

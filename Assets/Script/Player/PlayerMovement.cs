@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Vitesses & Saut")]
     // Vitesses calées sur la vitesse naturelle des clips Mixamo (averageSpeed x humanScale)
     // pour éviter que les pieds glissent. Si tu les changes, change aussi les seuils
-    // du Blend Tree "Locomotion" dans JotaroController (1.95 / 5.0).
+    // du Blend Tree "Locomotion" dans PlayerAnimator (1.95 / 5.0).
     public float walkSpeed = 1.95f;
     public float runSpeed = 5f;
     public float acceleration = 10f;
@@ -28,6 +28,9 @@ public class PlayerMovement : MonoBehaviour
     public string jumpParameter = "Jump";
     public string groundedParameter = "Grounded";
     public string freeFallParameter = "FreeFall";
+    public string hitParameter = "Hit";     // trigger : coup reçu
+    public string deadParameter = "Dead";   // bool : joueur mort
+    public string summonParameter = "Summon"; // trigger : geste d'invocation du Stand (haut du corps)
 
     [Header("FSM (lecture seule)")]
     [SerializeField] private PlayerState currentState; // copie de fsm.Current, pour l'inspecteur
@@ -85,6 +88,13 @@ public class PlayerMovement : MonoBehaviour
         stateTimer = 0f;
         fsm.ChangeState(next);
         currentState = next;
+
+        // Les animations de coup reçu et de mort suivent directement l'état de la FSM
+        if (animator != null)
+        {
+            if (next == PlayerState.Hit) animator.SetTrigger(hitParameter);
+            animator.SetBool(deadParameter, next == PlayerState.Dead);
+        }
     }
 
     // Coup reçu (appelé par PlayerDamage) : état Hit avec un recul qui retombe peu à peu
@@ -253,5 +263,9 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat(speedParameter, CurrentSpeed, 0.1f, Time.deltaTime);
     }
 
-    private void OnLand() { } // appelé par un Animation Event du clip de saut
+    // Geste d'invocation (appelé par StandController quand le Stand apparaît)
+    public void PlaySummonGesture()
+    {
+        if (animator != null) animator.SetTrigger(summonParameter);
+    }
 }
