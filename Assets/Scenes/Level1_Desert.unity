@@ -995,6 +995,7 @@ GameObject:
   - component: {fileID: 169324344}
   - component: {fileID: 169324343}
   - component: {fileID: 169324342}
+  - component: {fileID: 169324345}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -1095,6 +1096,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169324340}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &169324345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 169324340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &177114139
 GameObject:
   m_ObjectHideFlags: 0
@@ -2358,6 +2371,7 @@ GameObject:
   - component: {fileID: 404353887}
   - component: {fileID: 404353886}
   - component: {fileID: 404353885}
+  - component: {fileID: 404353888}
   m_Layer: 0
   m_Name: DuneL
   m_TagString: Untagged
@@ -2458,6 +2472,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 404353883}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &404353888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404353883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &426677977
 GameObject:
   m_ObjectHideFlags: 0
@@ -2470,6 +2496,7 @@ GameObject:
   - component: {fileID: 426677981}
   - component: {fileID: 426677980}
   - component: {fileID: 426677979}
+  - component: {fileID: 426677982}
   m_Layer: 0
   m_Name: DuneR
   m_TagString: Untagged
@@ -2570,6 +2597,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 426677977}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &426677982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426677977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &434278536
 GameObject:
   m_ObjectHideFlags: 0
@@ -3277,6 +3316,54 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523417173}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &552700351
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 552700353}
+  - component: {fileID: 552700352}
+  m_Layer: 0
+  m_Name: DesertHUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &552700352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552700351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a0280dd4b23f3a1c93454c086d90e59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NoiseIndicator
+  screenOffset: {x: 30, y: 30}
+  offColor: {r: 1, g: 1, b: 1, a: 0.2}
+  walkColor: {r: 1, g: 0.85, b: 0.3, a: 1}
+  runColor: {r: 1, g: 0.3, b: 0.2, a: 1}
+--- !u!4 &552700353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552700351}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &553966229
 GameObject:
   m_ObjectHideFlags: 0
@@ -4682,6 +4769,7 @@ GameObject:
   - component: {fileID: 889301626}
   - component: {fileID: 889301625}
   - component: {fileID: 889301624}
+  - component: {fileID: 889301627}
   m_Layer: 0
   m_Name: Sand
   m_TagString: Untagged
@@ -4782,6 +4870,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 889301622}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &889301627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889301622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &934639897
 GameObject:
   m_ObjectHideFlags: 0
@@ -4906,6 +5006,7 @@ GameObject:
   - component: {fileID: 953462878}
   - component: {fileID: 953462877}
   - component: {fileID: 953462876}
+  - component: {fileID: 953462879}
   m_Layer: 0
   m_Name: DuneR
   m_TagString: Untagged
@@ -5006,6 +5107,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 953462874}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &953462879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953462874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &958010146
 GameObject:
   m_ObjectHideFlags: 0
@@ -5108,6 +5221,7 @@ GameObject:
   - component: {fileID: 970562463}
   - component: {fileID: 970562462}
   - component: {fileID: 970562461}
+  - component: {fileID: 970562464}
   m_Layer: 0
   m_Name: DuneR
   m_TagString: Untagged
@@ -5208,6 +5322,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 970562459}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &970562464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 970562459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &989792122
 GameObject:
   m_ObjectHideFlags: 0
@@ -7037,6 +7163,7 @@ GameObject:
   - component: {fileID: 1365319252}
   - component: {fileID: 1365319251}
   - component: {fileID: 1365319250}
+  - component: {fileID: 1365319253}
   m_Layer: 0
   m_Name: DuneL
   m_TagString: Untagged
@@ -7137,6 +7264,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365319248}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1365319253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1365319248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1366310495
 GameObject:
   m_ObjectHideFlags: 0
@@ -8760,6 +8899,7 @@ GameObject:
   - component: {fileID: 1616195505}
   - component: {fileID: 1616195504}
   - component: {fileID: 1616195503}
+  - component: {fileID: 1616195506}
   m_Layer: 0
   m_Name: DuneL
   m_TagString: Untagged
@@ -8860,6 +9000,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1616195501}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1616195506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1616195501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1709728539
 GameObject:
   m_ObjectHideFlags: 0
@@ -9360,6 +9512,7 @@ GameObject:
   - component: {fileID: 1841184481}
   - component: {fileID: 1841184480}
   - component: {fileID: 1841184479}
+  - component: {fileID: 1841184482}
   m_Layer: 0
   m_Name: DuneL
   m_TagString: Untagged
@@ -9460,6 +9613,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1841184477}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1841184482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841184477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1844114965
 GameObject:
   m_ObjectHideFlags: 0
@@ -9696,6 +9861,7 @@ GameObject:
   - component: {fileID: 1854016637}
   - component: {fileID: 1854016636}
   - component: {fileID: 1854016635}
+  - component: {fileID: 1854016638}
   m_Layer: 0
   m_Name: Sand
   m_TagString: Untagged
@@ -9796,6 +9962,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1854016633}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1854016638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1854016633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1903394132
 GameObject:
   m_ObjectHideFlags: 0
@@ -9808,6 +9986,7 @@ GameObject:
   - component: {fileID: 1903394136}
   - component: {fileID: 1903394135}
   - component: {fileID: 1903394134}
+  - component: {fileID: 1903394137}
   m_Layer: 0
   m_Name: DuneR
   m_TagString: Untagged
@@ -9908,6 +10087,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903394132}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1903394137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903394132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1929998081
 GameObject:
   m_ObjectHideFlags: 0
@@ -10196,6 +10387,7 @@ GameObject:
   - component: {fileID: 1954313978}
   - component: {fileID: 1954313977}
   - component: {fileID: 1954313976}
+  - component: {fileID: 1954313979}
   m_Layer: 0
   m_Name: Sand
   m_TagString: Untagged
@@ -10296,6 +10488,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954313974}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1954313979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1954313974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc18549a49aab211b69ddaffdb12e98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SandSurface
 --- !u!1 &1985150351
 GameObject:
   m_ObjectHideFlags: 0
@@ -11026,3 +11230,4 @@ SceneRoots:
   - {fileID: 201388506}
   - {fileID: 1094620828}
   - {fileID: 233679356}
+  - {fileID: 552700353}
