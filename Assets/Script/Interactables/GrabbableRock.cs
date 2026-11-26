@@ -25,6 +25,9 @@ public class GrabbableRock : MonoBehaviour, IGrabbable
 
     public bool CanBeCarried => true;
 
+    // Vrai si la pierre a été lancée (et non simplement lâchée) : seules les pierres lancées font les leurres
+    public bool WasThrown { get; private set; }
+
     private RockState state = RockState.Resting;
     private Collider col;
     private Transform holder;
@@ -43,6 +46,7 @@ public class GrabbableRock : MonoBehaviour, IGrabbable
         ignoredRoot = newHolder.parent != null ? newHolder.parent : newHolder; // le joueur qui tient le point
         col.enabled = false;            // évite qu'elle pousse le joueur pendant qu'il la porte
         state = RockState.Held;
+        WasThrown = false;
     }
 
     public void OnThrown(Vector3 newVelocity)
@@ -53,6 +57,7 @@ public class GrabbableRock : MonoBehaviour, IGrabbable
 
         holder = null;
         velocity = newVelocity;
+        WasThrown = newVelocity.sqrMagnitude > 0.01f; // StandGrab.Drop lâche la pierre avec une vitesse nulle
         state = RockState.Flying;
     }
 
