@@ -138,6 +138,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 450195903246872291}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4463296401117109773}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4852425110753932735}
   m_SourcePrefab: {fileID: 100100000, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
 --- !u!4 &293096301295169923 stripped
 Transform:
@@ -192,6 +198,7 @@ MonoBehaviour:
   turnSpeed: 540
   gravity: -20
   jumpHeight: 1.5
+  assistedJumpHeight: 3.5
   actionSpeedFactor: 0.5
   hitStunDuration: 0.4
   speedParameter: Speed
@@ -288,3 +295,31 @@ MonoBehaviour:
   throwSpeed: 16
   throwLift: 3
   actionRecovery: 0.3
+--- !u!114 &4463296401117109773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e521b9be59589374aaddf7743c156ac4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  max: 100
+--- !u!114 &4852425110753932735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a942cb20c6a643ac593d348314df7dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamage
+  knockbackSpeed: 6
+  invulnerabilityDuration: 1
+  blinkInterval: 0.1
