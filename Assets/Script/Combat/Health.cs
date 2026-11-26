@@ -5,6 +5,7 @@ public class Health : MonoBehaviour, IDamageable
 {
     [Header("Health Bar")]
     public float max = 100f;
+    public float minDamage = 0f; // coups plus faibles ignorés (murs épais : seul le coup chargé les entame)
 
     public float Current { get; private set; }
     public bool IsAlive => Current > 0f;
@@ -22,7 +23,7 @@ public class Health : MonoBehaviour, IDamageable
 
     public void TakeDamage(DamageInfo info)
     {
-        if (!IsAlive || Invulnerable) return;
+        if (!IsAlive || Invulnerable || info.amount < minDamage) return;
         Current = Mathf.Max(0f, Current - info.amount);
         Damaged?.Invoke(info);
         if (Current <= 0f) Died?.Invoke();
