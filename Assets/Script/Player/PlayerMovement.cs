@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// États du joueur (section 4.6 du plan)
+public enum PlayerState { Locomotion, Jump, Rush, Grab, Hit, Dead }
+
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,27 +18,51 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -20f;
     public float jumpHeight = 1.5f;
 
+    [Header("États")]
+    public float actionSpeedFactor = 0.5f; // vitesse de marche réduite pendant Rush et Grab
+    public float hitStunDuration = 0.4f;   // durée pendant laquelle le joueur ne contrôle plus rien après un coup
+
     [Header("Animator")]
     public string speedParameter = "Speed";
     public string jumpParameter = "Jump";
     public string groundedParameter = "Grounded";
     public string freeFallParameter = "FreeFall";
 
-    public float CurrentSpeed { get; private set; }
+    [Header("FSM (lecture seule)")]
+    [SerializeField] private PlayerState currentState; // copie de fsm.Current, pour l'inspecteur
 
+    public float CurrentSpeed { get; private set; }
+    public bool IsGrounded { get; private set; }
+    public PlayerState State => fsm.Current;
+
+    private StateMachine<PlayerState> fsm;
     private CharacterController controller;
     private Animator animator;
     private float verticalVelocity;
     private Vector3 horizontalVelocity;
+    private float stateTimer;
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction sprintAction;
 
-    void Start()
+    void Awake()
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
 
+        // Construit dans Awake pour que les autres scripts puissent changer l'état dès leur Start
+        fsm = new StateMachine<PlayerState>();
+        fsm.Add(PlayerState.Locomotion, tick: TickLocomotion);
+        fsm.Add(PlayerState.Jump, tick: TickJump);
+        fsm.Add(PlayerState.Rush, tick: TickAction);
+        fsm.Add(PlayerState.Grab, tick: TickAction);
+        fsm.Add(PlayerState.Hit, enter: StopHorizontal, tick: TickHit);
+        fsm.Add(PlayerState.Dead, enter: StopHorizontal, tick: TickDead);
+        ChangeState(PlayerState.Locomotion);
+    }
+
+    void Start()
+    {
         // Actions "Project-wide" (Assets/InputSystem_Actions.inputactions).
         // Les touches clavier sont positionnelles : WASD en QWERTY = ZQSD en AZERTY, sans code spécifique.
         moveAction = InputSystem.actions.FindAction("Player/Move", true);
@@ -46,80 +73,131 @@ public class PlayerMovement : MonoBehaviour
         sprintAction.Enable();
     }
 
+    // Point d'entrée unique pour changer d'état, utilisé aussi par StandCombat, Health…
+    public void ChangeState(PlayerState next)
+    {
+        stateTimer = 0f;
+        fsm.ChangeState(next);
+        currentState = next;
+    }
+
     void Update()
     {
-        Vector2 move = moveAction.ReadValue<Vector2>();
-        Vector3 input = Vector3.ClampMagnitude(new Vector3(move.x, 0f, move.y), 1f);
-        bool running = sprintAction.IsPressed();
+        UpdateGrounded();
+        stateTimer += Time.deltaTime;
+        fsm.Tick();
+        ApplyGravityAndMove();
+        UpdateAnimator();
+    }
 
-        Vector3 forward = Vector3.forward;
-        Vector3 right = Vector3.right;
-        if (Camera.main != null)
+    // ---------- États ----------
+
+    private void TickLocomotion()
+    {
+        Steer(sprintAction.IsPressed() ? runSpeed : walkSpeed);
+
+        if (!IsGrounded)
         {
-            forward = Camera.main.transform.forward;
-            right = Camera.main.transform.right;
-            forward.y = 0f;
-            right.y = 0f;
-            forward.Normalize();
-            right.Normalize();
+            ChangeState(PlayerState.Jump); // tombe d'un rebord sans sauter
         }
-        Vector3 moveDir = forward * input.z + right * input.x;
+        else if (jumpAction.WasPressedThisFrame())
+        {
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            if (animator != null) animator.SetBool(jumpParameter, true);
+            ChangeState(PlayerState.Jump);
+        }
+    }
 
-        float targetSpeed = moveDir.sqrMagnitude > 0.001f
-            ? (running ? runSpeed : walkSpeed)
-            : 0f;
-        Vector3 targetVelocity = moveDir.normalized * targetSpeed;
+    private void TickJump()
+    {
+        Steer(sprintAction.IsPressed() ? runSpeed : walkSpeed);
+
+        // On ne considère l'atterrissage qu'en descente, sinon le sol du départ compterait
+        if (IsGrounded && verticalVelocity <= 0f)
+            ChangeState(PlayerState.Locomotion);
+    }
+
+    // Rush et Grab : le joueur marche lentement pendant que le Stand agit.
+    // C'est le script du Stand qui ramène le joueur en Locomotion à la fin de l'action.
+    private void TickAction()
+    {
+        Steer(walkSpeed * actionSpeedFactor);
+    }
+
+    private void TickHit()
+    {
+        Steer(0f);
+        if (stateTimer >= hitStunDuration)
+            ChangeState(IsGrounded ? PlayerState.Locomotion : PlayerState.Jump);
+    }
+
+    private void TickDead()
+    {
+        Steer(0f);
+    }
+
+    private void StopHorizontal()
+    {
+        horizontalVelocity = Vector3.zero;
+    }
+
+    // ---------- Déplacement commun à tous les états ----------
+
+    // Accélère vers la direction demandée, relative à la caméra. maxSpeed = 0 : on freine sur place.
+    private void Steer(float maxSpeed)
+    {
+        Vector3 moveDir = Vector3.zero;
+        if (maxSpeed > 0f)
+        {
+            Vector2 move = moveAction.ReadValue<Vector2>();
+            Vector3 input = Vector3.ClampMagnitude(new Vector3(move.x, 0f, move.y), 1f);
+
+            Vector3 forward = Vector3.forward;
+            Vector3 right = Vector3.right;
+            if (Camera.main != null)
+            {
+                forward = Camera.main.transform.forward;
+                right = Camera.main.transform.right;
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+            }
+            moveDir = forward * input.z + right * input.x;
+        }
+
+        bool moving = moveDir.sqrMagnitude > 0.001f;
+        Vector3 targetVelocity = moving ? moveDir.normalized * maxSpeed : Vector3.zero;
         horizontalVelocity = Vector3.MoveTowards(
             horizontalVelocity, targetVelocity, acceleration * Time.deltaTime);
 
-        if (moveDir.sqrMagnitude > 0.001f)
+        if (moving)
         {
             Quaternion target = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation, target, turnSpeed * Time.deltaTime);
         }
+    }
 
-        // Détection solide du sol (CharacterController + Raycast de secours)
-        bool isGrounded = controller.isGrounded;
-        if (!isGrounded && verticalVelocity <= 0.1f)
-        {
-            isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.2f, Vector3.down, 0.35f);
-        }
+    // Détection solide du sol (CharacterController + Raycast de secours)
+    private void UpdateGrounded()
+    {
+        IsGrounded = controller.isGrounded;
+        if (!IsGrounded && verticalVelocity <= 0.1f)
+            IsGrounded = Physics.Raycast(transform.position + Vector3.up * 0.2f, Vector3.down, 0.35f);
+    }
 
-        // Saut et gestion de la gravité
-        if (isGrounded)
+    private void ApplyGravityAndMove()
+    {
+        if (IsGrounded)
         {
             if (verticalVelocity < 0f)
-                verticalVelocity = -2f;
-
-            if (animator != null)
-            {
-                animator.SetBool(groundedParameter, true);
-                animator.SetBool(freeFallParameter, false);
-                animator.SetBool(jumpParameter, false);
-            }
-
-            if (jumpAction.WasPressedThisFrame())
-            {
-                verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                if (animator != null)
-                {
-                    animator.SetBool(jumpParameter, true);
-                    animator.SetBool(groundedParameter, false);
-                }
-            }
+                verticalVelocity = -2f; // colle au sol sans accumuler de vitesse
         }
         else
         {
             verticalVelocity += gravity * Time.deltaTime;
-            if (animator != null)
-            {
-                animator.SetBool(groundedParameter, false);
-                if (verticalVelocity < 0f)
-                    animator.SetBool(freeFallParameter, true);
-            }
         }
-
         verticalVelocity = Mathf.Max(verticalVelocity, -30f);
 
         Vector3 velocity = horizontalVelocity + Vector3.up * verticalVelocity;
@@ -137,10 +215,25 @@ public class PlayerMovement : MonoBehaviour
         Vector3 flat = controller.velocity;
         flat.y = 0f;
         CurrentSpeed = flat.magnitude;
-
-        if (animator != null)
-            animator.SetFloat(speedParameter, CurrentSpeed, 0.1f, Time.deltaTime);
     }
 
-    private void OnLand() { }
+    private void UpdateAnimator()
+    {
+        if (animator == null) return;
+
+        bool inAir = fsm.Current == PlayerState.Jump;
+        animator.SetBool(groundedParameter, !inAir);
+        if (!inAir)
+        {
+            animator.SetBool(freeFallParameter, false);
+            animator.SetBool(jumpParameter, false);
+        }
+        else if (verticalVelocity < 0f)
+        {
+            animator.SetBool(freeFallParameter, true);
+        }
+        animator.SetFloat(speedParameter, CurrentSpeed, 0.1f, Time.deltaTime);
+    }
+
+    private void OnLand() { } // appelé par un Animation Event du clip de saut
 }

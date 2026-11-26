@@ -1,6 +1,9 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+
+// États du Stand (section 4.6 du plan)
+public enum StandState { Hidden, Summoning, Following, Attacking, Dismissing }
 
 public class StandController : MonoBehaviour
 {
@@ -9,22 +12,47 @@ public class StandController : MonoBehaviour
     [SerializeField] private AudioClip zaWarudoSound;  // Assets/Audio/star-platinum-za-warudo.mp3
 
     [Header("Activation")]
-    public bool isStandActive = false; // Désactivé par défaut, s'active avec l'action "Stand" (E)
+    [FormerlySerializedAs("isStandActive")]
+    public bool startSummoned = false; // sinon le Stand apparaît avec l'action "Stand" (E)
 
     [Header("Positionnement devant le joueur (JJBA Anime style)")]
-    public float frontOffset = 1.35f;      // Distance devant Jotaro
+    public float frontOffset = 1.35f;      // Distance devant le joueur
     public float hoverOffset = 0.25f;      // Légère lévitation au-dessus du sol
     public float followSpeed = 14f;        // Vitesse de suivi des pas
     public float rotationSpeed = 16f;      // Vitesse d'alignement du regard
     public float hoverAmplitude = 0.08f;   // Amplitude de l'ondulation de vol
     public float hoverFrequency = 2.4f;    // Fréquence de flottement
 
+    [Header("Transitions")]
+    public float summonDuration = 0.22f;
+    public float dismissDuration = 0.18f;
+
+    [Header("FSM (lecture seule)")]
+    [SerializeField] private StandState currentState; // copie de fsm.Current, pour l'inspecteur
+
+    public StandState State => fsm.Current;
+    // Vrai quand le Stand est sorti et peut agir (rush, grab…)
+    public bool IsSummoned => fsm.Current == StandState.Following || fsm.Current == StandState.Attacking;
+    public Transform StandTransform => standInstance != null ? standInstance.transform : null;
+
+    private StateMachine<StandState> fsm;
     private GameObject standInstance;
     private AudioSource audioSource;
     private Light auraLight;
-    private Coroutine transitionCoroutine;
     private PlayerMovement playerMovement;
     private InputAction standAction;
+    private float stateTimer;
+    private float dismissStartScale;
+
+    void Awake()
+    {
+        fsm = new StateMachine<StandState>();
+        fsm.Add(StandState.Hidden, enter: EnterHidden, tick: TickHidden);
+        fsm.Add(StandState.Summoning, enter: EnterSummoning, tick: TickSummoning);
+        fsm.Add(StandState.Following, tick: TickToggleOff);
+        fsm.Add(StandState.Attacking, tick: TickToggleOff);
+        fsm.Add(StandState.Dismissing, enter: EnterDismissing, tick: TickDismissing);
+    }
 
     void Start()
     {
@@ -56,9 +84,15 @@ public class StandController : MonoBehaviour
         standInstance.name = standPrefab.name;
         auraLight = standInstance.GetComponentInChildren<Light>();
 
-        if (isStandActive)
+        if (startSummoned)
+        {
             standInstance.transform.SetPositionAndRotation(GetTargetPosition(), GetTargetRotation());
-        standInstance.SetActive(isStandActive);
+            ChangeState(StandState.Following);
+        }
+        else
+        {
+            ChangeState(StandState.Hidden);
+        }
     }
 
     void OnDestroy()
@@ -68,39 +102,118 @@ public class StandController : MonoBehaviour
 
     void Update()
     {
-        if (standAction != null && standAction.WasPressedThisFrame())
-            ToggleStand();
+        if (standInstance == null) return;
+        stateTimer += Time.deltaTime;
+        fsm.Tick();
     }
 
     void LateUpdate()
     {
-        // Quand Star Platinum est actif, il se positionne et flotte devant Jotaro
-        if (isStandActive && standInstance != null && standInstance.activeSelf)
+        // Pendant l'apparition, le suivi et l'attaque, le Stand flotte devant le joueur
+        StandState s = fsm.Current;
+        if (standInstance != null &&
+            (s == StandState.Summoning || s == StandState.Following || s == StandState.Attacking))
             UpdateStandPosition();
+    }
+
+    // ---------- API pour les autres scripts ----------
+
+    public void ChangeState(StandState next)
+    {
+        stateTimer = 0f;
+        fsm.ChangeState(next);
+        currentState = next;
     }
 
     public void ToggleStand()
     {
         if (standInstance == null) return;
-
-        isStandActive = !isStandActive;
-
-        if (transitionCoroutine != null) StopCoroutine(transitionCoroutine);
-
-        if (isStandActive)
-        {
-            if (zaWarudoSound != null)
-            {
-                audioSource.pitch = 1f;
-                audioSource.PlayOneShot(zaWarudoSound, 1f);
-            }
-            transitionCoroutine = StartCoroutine(SummonRoutine());
-        }
+        StandState s = fsm.Current;
+        if (s == StandState.Hidden || s == StandState.Dismissing)
+            ChangeState(StandState.Summoning);
         else
-        {
-            transitionCoroutine = StartCoroutine(DismissRoutine());
-        }
+            ChangeState(StandState.Dismissing);
     }
+
+    // Le rush (S1-M2) passe le Stand en Attacking, puis le rend avec StopAttack.
+    public bool StartAttack()
+    {
+        if (fsm.Current != StandState.Following) return false;
+        ChangeState(StandState.Attacking);
+        return true;
+    }
+
+    public void StopAttack()
+    {
+        if (fsm.Current == StandState.Attacking)
+            ChangeState(StandState.Following);
+    }
+
+    // ---------- États ----------
+
+    private bool TogglePressed()
+    {
+        return standAction != null && standAction.WasPressedThisFrame();
+    }
+
+    private void EnterHidden()
+    {
+        standInstance.transform.localScale = Vector3.zero;
+        standInstance.SetActive(false);
+    }
+
+    private void TickHidden()
+    {
+        if (TogglePressed()) ToggleStand();
+    }
+
+    private void EnterSummoning()
+    {
+        standInstance.SetActive(true);
+
+        // Émerge depuis le joueur vers l'avant (sauf si on interrompt un renvoi : il repart d'où il est)
+        if (standInstance.transform.localScale.x <= 0.01f)
+            standInstance.transform.position = transform.position + Vector3.up * hoverOffset;
+
+        if (zaWarudoSound != null)
+        {
+            audioSource.pitch = 1f;
+            audioSource.PlayOneShot(zaWarudoSound, 1f);
+        }
+        if (auraLight != null) auraLight.intensity = 8f;
+    }
+
+    private void TickSummoning()
+    {
+        float t = Mathf.Clamp01(stateTimer / summonDuration);
+        standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, t);
+        if (auraLight != null) auraLight.intensity = Mathf.Lerp(8f, 2.5f, t);
+
+        if (TogglePressed()) ToggleStand();
+        else if (t >= 1f) ChangeState(StandState.Following);
+    }
+
+    private void TickToggleOff()
+    {
+        if (TogglePressed()) ToggleStand();
+    }
+
+    private void EnterDismissing()
+    {
+        dismissStartScale = standInstance.transform.localScale.x;
+        if (auraLight != null) auraLight.intensity = 2.5f;
+    }
+
+    private void TickDismissing()
+    {
+        float t = Mathf.Clamp01(stateTimer / dismissDuration);
+        standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(dismissStartScale, 0f, t);
+
+        if (TogglePressed()) ToggleStand();
+        else if (t >= 1f) ChangeState(StandState.Hidden);
+    }
+
+    // ---------- Positionnement ----------
 
     private Vector3 GetTargetPosition()
     {
@@ -126,48 +239,5 @@ public class StandController : MonoBehaviour
         Transform t = standInstance.transform;
         t.position = Vector3.Lerp(t.position, GetTargetPosition(), followSpeed * Time.deltaTime);
         t.rotation = Quaternion.Slerp(t.rotation, GetTargetRotation(), rotationSpeed * Time.deltaTime);
-    }
-
-    private IEnumerator SummonRoutine()
-    {
-        standInstance.SetActive(true);
-        standInstance.transform.localScale = Vector3.zero;
-
-        // Émerge depuis Jotaro vers l'avant
-        standInstance.transform.position = transform.position + Vector3.up * hoverOffset;
-
-        if (auraLight != null) auraLight.intensity = 8f;
-
-        float elapsed = 0f;
-        float duration = 0.22f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(0f, 1f, t);
-
-            if (auraLight != null)
-                auraLight.intensity = Mathf.Lerp(8f, 2.5f, t);
-            yield return null;
-        }
-
-        standInstance.transform.localScale = Vector3.one;
-        if (auraLight != null) auraLight.intensity = 2.5f;
-    }
-
-    private IEnumerator DismissRoutine()
-    {
-        float elapsed = 0f;
-        float duration = 0.18f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            standInstance.transform.localScale = Vector3.one * Mathf.SmoothStep(1f, 0f, t);
-            yield return null;
-        }
-
-        standInstance.transform.localScale = Vector3.zero;
-        standInstance.SetActive(false);
     }
 }
