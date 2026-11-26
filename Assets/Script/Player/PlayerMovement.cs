@@ -34,6 +34,9 @@ public class PlayerMovement : MonoBehaviour
 
     public float CurrentSpeed { get; private set; }
     public bool IsGrounded { get; private set; }
+
+    // Multiplie la vitesse de déplacement (1 = normal). Les sables mouvants la baissent.
+    public float SpeedMultiplier { get; set; } = 1f;
     public PlayerState State => fsm.Current;
 
     private StateMachine<PlayerState> fsm;
@@ -182,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool moving = moveDir.sqrMagnitude > 0.001f;
-        Vector3 targetVelocity = moving ? moveDir.normalized * maxSpeed : Vector3.zero;
+        Vector3 targetVelocity = moving ? moveDir.normalized * maxSpeed * SpeedMultiplier : Vector3.zero;
         horizontalVelocity = Vector3.MoveTowards(
             horizontalVelocity, targetVelocity, acceleration * Time.deltaTime);
 
