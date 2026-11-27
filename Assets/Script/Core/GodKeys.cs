@@ -154,5 +154,18 @@ public class GodKeys : MonoBehaviour
         if (Active || Invincible)
             GUI.Label(new Rect(10, 10, 300, 20), (Active ? "GOD KEYS" : "") + (Invincible ? " · INVINCIBLE" : ""));
         if (messageTimer > 0f) GUI.Label(new Rect(10, 30, 400, 20), message);
+
+        // God keys actives : vie et énergie du Stand en chiffres, en attendant le HUD (S1-J5)
+        if (Active)
+        {
+            PlayerMovement player = FindFirstObjectByType<PlayerMovement>();
+            if (player == null) return;
+            Health health = player.GetComponent<Health>();
+            StandCombat combat = player.GetComponent<StandCombat>();
+            string stats = "";
+            if (health != null) stats += "PV " + Mathf.CeilToInt(health.Current) + " / " + Mathf.CeilToInt(health.max);
+            if (combat != null) stats += "   Énergie " + Mathf.RoundToInt(combat.Energy);
+            GUI.Label(new Rect(10, 50, 400, 20), stats);
+        }
     }
 }
