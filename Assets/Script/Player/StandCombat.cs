@@ -142,6 +142,7 @@ public class StandCombat : MonoBehaviour
         player.ChangeState(PlayerState.Rush);
         FaceCamera();
         StartStrikes(rushDuration, hitInterval, damagePerHit, 0f, false); // premier coup immédiat
+        stand.SetAnimationBool("Rush", true);
         return true;
     }
 
@@ -155,6 +156,7 @@ public class StandCombat : MonoBehaviour
         ChargeProgress = 0f;
         chargeTimer = 0f;
         player.ChangeState(PlayerState.Rush); // marche lente pendant la charge
+        stand.SetAnimationBool("Charging", true);
     }
 
     private void TickCharge()
@@ -178,6 +180,7 @@ public class StandCombat : MonoBehaviour
         IsCharging = false;
         ChargeProgress = 0f;
         stand.SetChargeGlow(0f);
+        stand.SetAnimationBool("Charging", false);
         if (player.State == PlayerState.Rush)
             player.ChangeState(PlayerState.Locomotion);
     }
@@ -189,6 +192,7 @@ public class StandCombat : MonoBehaviour
         player.ChangeState(PlayerState.Rush);
         FaceCamera();
         StartStrikes(punchDuration, 0f, chargedDamage, punchWindup, true); // un seul coup, après l'élan
+        stand.PlayAnimation("HeavyPunch");
     }
 
     // ---------- Frappes communes au rush et au coup chargé ----------
@@ -231,6 +235,7 @@ public class StandCombat : MonoBehaviour
     private void EndStrikes()
     {
         attackTimer = 0f;
+        stand.SetAnimationBool("Rush", false);
         stand.StopAttack();
         if (player.State == PlayerState.Rush)
             player.ChangeState(PlayerState.Locomotion);
