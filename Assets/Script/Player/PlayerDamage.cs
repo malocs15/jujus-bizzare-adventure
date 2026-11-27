@@ -37,10 +37,14 @@ public class PlayerDamage : MonoBehaviour
     {
         if (!health.IsAlive) return; // c'est OnDied qui s'en occupe
 
+        // Dégât d'environnement (chaleur…) : il arrive sans direction. Pas de recul ni d'invulnérabilité,
+        // sinon le joueur serait projeté et les dégâts suivants de la chaleur seraient ignorés.
+        if (info.direction.sqrMagnitude < 0.0001f) return;
+
         // Recul horizontal, dans la direction du coup
         Vector3 push = info.direction;
         push.y = 0f;
-        if (push.sqrMagnitude < 0.0001f) push = -transform.forward;
+        if (push.sqrMagnitude < 0.0001f) push = -transform.forward; // coup venu d'en haut ou d'en bas
         movement.ApplyHit(push.normalized * knockbackSpeed);
 
         invulnerableTimer = invulnerabilityDuration;
