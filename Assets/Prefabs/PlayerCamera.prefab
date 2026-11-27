@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 221389018793781723}
   - component: {fileID: 7817888414025888860}
   - component: {fileID: 7233759134656674365}
+  - component: {fileID: 4952672929269693335}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: MainCamera
@@ -160,3 +161,23 @@ MonoBehaviour:
   maxDistance: 12
   zoomSpeed: 4
   followSmooth: 12
+  lockOn: {fileID: 4952672929269693335}
+  lockTurnSpeed: 8
+  lockPitchOffset: 12
+  lockMinPitch: -35
+  minHeightAbovePlayer: 0.3
+--- !u!114 &4952672929269693335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988423816723442208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 541ce908e220371f7bd6c9386673905e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraLockOn
+  maxDistance: 25
+  breakDistance: 32
+  screenMargin: 0.05
