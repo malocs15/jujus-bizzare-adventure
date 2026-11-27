@@ -144,6 +144,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4852425110753932735}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5921268058502612813}
   m_SourcePrefab: {fileID: 100100000, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
 --- !u!4 &293096301295169923 stripped
 Transform:
@@ -270,6 +273,12 @@ MonoBehaviour:
   rushDuration: 0.8
   hitInterval: 0.08
   damagePerHit: 4
+  chargeStartDelay: 0.25
+  chargeTime: 1
+  chargedDamage: 60
+  chargedCost: 40
+  punchWindup: 0.12
+  punchDuration: 0.35
   maxEnergy: 100
   rushCost: 25
   regenPerSecond: 20
@@ -308,6 +317,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   max: 100
+  minDamage: 0
 --- !u!114 &4852425110753932735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,3 +333,21 @@ MonoBehaviour:
   knockbackSpeed: 6
   invulnerabilityDuration: 1
   blinkInterval: 0.1
+--- !u!114 &5921268058502612813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f45f9ab65283874b68a08d56211f94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerNoise
+  emitInterval: 0.3
+  walkIntensity: 0.35
+  runIntensity: 1
+  landingIntensity: 0.8
+  runThreshold: 3.5
+  groundCheckDistance: 0.6
