@@ -135,6 +135,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6282412660830977433}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 450195903246872291}
   m_SourcePrefab: {fileID: 100100000, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
 --- !u!4 &293096301295169923 stripped
 Transform:
@@ -264,3 +267,24 @@ MonoBehaviour:
   rushCost: 25
   regenPerSecond: 20
   regenDelay: 0.6
+--- !u!114 &450195903246872291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bc712fccea8118d98d02972364bbebf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StandGrab
+  grabRange: 12
+  aimTolerance: 0.12
+  grabLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  holdOffset: {x: 0, y: 1.8, z: 1.6}
+  throwSpeed: 16
+  throwLift: 3
+  actionRecovery: 0.3
