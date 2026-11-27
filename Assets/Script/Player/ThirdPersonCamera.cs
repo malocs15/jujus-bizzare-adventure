@@ -38,10 +38,12 @@ public class ThirdPersonCamera : MonoBehaviour
 
         if (lockOn == null) lockOn = GetComponent<CameraLockOn>();
 
+        // Sans cible réglée dans la scène, on suit l'objet qui porte PlayerMovement
+        // (le tag « Player » est aussi sur la racine du prefab, qui, elle, ne bouge pas)
         if (target == null)
         {
-            GameObject p = GameObject.FindGameObjectWithTag("Player");
-            if (p != null) target = p.transform;
+            PlayerMovement player = FindFirstObjectByType<PlayerMovement>();
+            if (player != null) target = player.transform;
         }
 
         if (target != null)
