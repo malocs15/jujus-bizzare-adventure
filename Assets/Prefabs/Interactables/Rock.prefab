@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7012874760270361207}
   - component: {fileID: 666723515815950296}
   - component: {fileID: 2872857751200713313}
+  - component: {fileID: 7576387098228377778}
   m_Layer: 0
   m_Name: Rock
   m_TagString: Untagged
@@ -131,3 +132,18 @@ MonoBehaviour:
   bounciness: 0.35
   restSpeed: 2
   hitDamage: 15
+  killHeight: -50
+--- !u!114 &7576387098228377778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4718176866581636600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ea698b467d1d32ba1ac1ca8b7f635d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DecoyStone
+  loudSpeed: 10
+  minSpeed: 2
