@@ -56,6 +56,14 @@ public class ThirdPersonCamera : MonoBehaviour
         Cursor.visible = false;
     }
 
+    // Caméra détruite (changement de scène) ou désactivée : on rend la souris,
+    // sinon les boutons des menus et des écrans suivants restent inaccessibles
+    void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
