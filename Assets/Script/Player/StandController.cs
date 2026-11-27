@@ -154,6 +154,13 @@ public class StandController : MonoBehaviour
             ChangeState(StandState.Following);
     }
 
+    // Pendant la charge du coup chargé, l'aura s'intensifie (t de 0 à 1)
+    public void SetChargeGlow(float t)
+    {
+        if (auraLight != null && IsSummoned)
+            auraLight.intensity = Mathf.Lerp(2.5f, 8f, t);
+    }
+
     // ---------- États ----------
 
     private bool TogglePressed()
