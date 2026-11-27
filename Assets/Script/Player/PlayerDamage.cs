@@ -16,6 +16,18 @@ public class PlayerDamage : MonoBehaviour
     private float invulnerableTimer;
     private float blinkTimer;
     private bool visible = true;
+    private bool godMode;
+
+    // Invincibilité de la god key F2 (GodKeys) : tous les dégâts sont ignorés
+    public bool GodMode
+    {
+        get { return godMode; }
+        set
+        {
+            godMode = value;
+            if (health != null) health.Invulnerable = value || invulnerableTimer > 0f;
+        }
+    }
 
     void Awake()
     {
@@ -90,7 +102,7 @@ public class PlayerDamage : MonoBehaviour
     private void EndInvulnerability()
     {
         invulnerableTimer = 0f;
-        health.Invulnerable = false;
+        health.Invulnerable = godMode; // reste invulnérable si la god key est active
         SetVisible(true);
     }
 
