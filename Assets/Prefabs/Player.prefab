@@ -129,6 +129,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6016185938508968507}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6135045149289914519}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6282412660830977433}
   m_SourcePrefab: {fileID: 100100000, guid: 2442afe518eebad42ab0d1bcf986c310, type: 3}
 --- !u!4 &293096301295169923 stripped
 Transform:
@@ -183,10 +189,13 @@ MonoBehaviour:
   turnSpeed: 540
   gravity: -20
   jumpHeight: 1.5
+  actionSpeedFactor: 0.5
+  hitStunDuration: 0.4
   speedParameter: Speed
   jumpParameter: Jump
   groundedParameter: Grounded
   freeFallParameter: FreeFall
+  currentState: 0
 --- !u!114 &6016185938508968507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -201,10 +210,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StandController
   standPrefab: {fileID: 713401943830779669, guid: 128603771b48afd2c9f92bd7e06ffc94, type: 3}
   zaWarudoSound: {fileID: 8300000, guid: a8f289c0b1156d443b3fcf058d4c55aa, type: 3}
-  isStandActive: 0
+  startSummoned: 0
   frontOffset: 1.35
   hoverOffset: 0.25
   followSpeed: 14
   rotationSpeed: 16
   hoverAmplitude: 0.08
   hoverFrequency: 2.4
+  summonDuration: 0.22
+  dismissDuration: 0.18
+  attackLunge: 0.4
+  jabAmplitude: 0.25
+  jabFrequency: 12
+  currentState: 0
+--- !u!114 &6135045149289914519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 568dd76dcd8dc590b8a27b35625a54cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hitbox
+  localCenter: {x: 0, y: 1.2, z: 1.9}
+  radius: 1
+  layers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  impactEffect: {fileID: 5929370727394364966, guid: 38ac52533df8b4584bc6d6608fea898d, type: 3}
+  impactSound: {fileID: 8300000, guid: 332289f42947a5c0eb2b62f63e0ea785, type: 3}
+  impactVolume: 0.8
+  owner: {fileID: 0}
+--- !u!114 &6282412660830977433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106365042147568441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b955d9be9daf0e2559116bd727b8f4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StandCombat
+  hitbox: {fileID: 6135045149289914519}
+  rushDuration: 0.8
+  hitInterval: 0.08
+  damagePerHit: 4
+  maxEnergy: 100
+  rushCost: 25
+  regenPerSecond: 20
+  regenDelay: 0.6

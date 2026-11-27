@@ -27,6 +27,11 @@ public class StandController : MonoBehaviour
     public float summonDuration = 0.22f;
     public float dismissDuration = 0.18f;
 
+    [Header("Attaque (en attendant les animations)")]
+    public float attackLunge = 0.4f;      // le Stand avance pendant le rush
+    public float jabAmplitude = 0.25f;    // va-et-vient des coups
+    public float jabFrequency = 12f;
+
     [Header("FSM (lecture seule)")]
     [SerializeField] private StandState currentState; // copie de fsm.Current, pour l'inspecteur
 
@@ -223,8 +228,13 @@ public class StandController : MonoBehaviour
         // Le Stand se projette légèrement plus en avant lors de la course
         float speedBonus = playerMovement != null ? playerMovement.CurrentSpeed * 0.08f : 0f;
 
+        // Pendant le rush, il avance et fait des va-et-vient rapides
+        float jab = 0f;
+        if (fsm.Current == StandState.Attacking)
+            jab = attackLunge + Mathf.Abs(Mathf.Sin(stateTimer * jabFrequency)) * jabAmplitude;
+
         return transform.position +
-               transform.forward * (frontOffset + speedBonus) +
+               transform.forward * (frontOffset + speedBonus + jab) +
                Vector3.up * (hoverOffset + hover);
     }
 

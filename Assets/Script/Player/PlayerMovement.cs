@@ -117,11 +117,11 @@ public class PlayerMovement : MonoBehaviour
             ChangeState(PlayerState.Locomotion);
     }
 
-    // Rush et Grab : le joueur marche lentement pendant que le Stand agit.
-    // C'est le script du Stand qui ramène le joueur en Locomotion à la fin de l'action.
+    // Rush et Grab : le joueur marche lentement sans se retourner, pour que le Stand
+    // reste face à sa cible. C'est le script du Stand qui ramène le joueur en Locomotion.
     private void TickAction()
     {
-        Steer(walkSpeed * actionSpeedFactor);
+        Steer(walkSpeed * actionSpeedFactor, false);
     }
 
     private void TickHit()
@@ -144,7 +144,8 @@ public class PlayerMovement : MonoBehaviour
     // ---------- Déplacement commun à tous les états ----------
 
     // Accélère vers la direction demandée, relative à la caméra. maxSpeed = 0 : on freine sur place.
-    private void Steer(float maxSpeed)
+    // turn = false : le joueur se déplace sans changer d'orientation.
+    private void Steer(float maxSpeed, bool turn = true)
     {
         Vector3 moveDir = Vector3.zero;
         if (maxSpeed > 0f)
@@ -171,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
         horizontalVelocity = Vector3.MoveTowards(
             horizontalVelocity, targetVelocity, acceleration * Time.deltaTime);
 
-        if (moving)
+        if (moving && turn)
         {
             Quaternion target = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.RotateTowards(
