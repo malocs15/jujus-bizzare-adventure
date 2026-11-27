@@ -158,6 +158,8 @@ public class StandController : MonoBehaviour
 
     private bool TogglePressed()
     {
+        // Un joueur mort ne peut plus invoquer son Stand
+        if (playerMovement != null && playerMovement.State == PlayerState.Dead) return false;
         return standAction != null && standAction.WasPressedThisFrame();
     }
 

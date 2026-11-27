@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float turnSpeed = 540f;
     public float gravity = -20f;
     public float jumpHeight = 1.5f;
+    public float assistedJumpHeight = 3.5f; // saut assisté : quand le Stand est sorti (section 4.1)
 
     [Header("États")]
     public float actionSpeedFactor = 0.5f; // vitesse de marche réduite pendant Rush et Grab
@@ -37,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
 
     private StateMachine<PlayerState> fsm;
     private CharacterController controller;
+    private StandController stand;
     private Animator animator;
     private float verticalVelocity;
     private Vector3 horizontalVelocity;
@@ -49,6 +51,7 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        stand = GetComponent<StandController>();
 
         // Construit dans Awake pour que les autres scripts puissent changer l'état dès leur Start
         fsm = new StateMachine<PlayerState>();
@@ -73,12 +76,20 @@ public class PlayerMovement : MonoBehaviour
         sprintAction.Enable();
     }
 
-    // Point d'entrée unique pour changer d'état, utilisé aussi par StandCombat, Health…
+    // Point d'entrée unique pour changer d'état, utilisé aussi par StandCombat, StandGrab, PlayerDamage…
     public void ChangeState(PlayerState next)
     {
         stateTimer = 0f;
         fsm.ChangeState(next);
         currentState = next;
+    }
+
+    // Coup reçu (appelé par PlayerDamage) : état Hit avec un recul qui retombe peu à peu
+    public void ApplyHit(Vector3 knockback)
+    {
+        if (fsm.Current == PlayerState.Dead) return;
+        ChangeState(PlayerState.Hit);  // l'entrée dans Hit remet la vitesse à zéro…
+        horizontalVelocity = knockback; // …puis on applique le recul
     }
 
     void Update()
@@ -102,7 +113,10 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (jumpAction.WasPressedThisFrame())
         {
-            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            // Le Stand sorti porte le joueur : saut beaucoup plus haut
+            // TODO S1-J2 : ne l'autoriser qu'une fois la compétence débloquée (niveau 2, section 4.1)
+            float height = stand != null && stand.IsSummoned ? assistedJumpHeight : jumpHeight;
+            verticalVelocity = Mathf.Sqrt(height * -2f * gravity);
             if (animator != null) animator.SetBool(jumpParameter, true);
             ChangeState(PlayerState.Jump);
         }
